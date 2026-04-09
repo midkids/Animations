@@ -28,6 +28,10 @@ struct ContentView: View {
     @State private var dragAmount = CGSize.zero
     let letters = Array("Hello SwiftUI")
     
+    // used for Showing and hiding views with transitions
+    @State private var isShowingRed = false
+     
+    
     var body: some View {
         
         /*
@@ -297,7 +301,7 @@ struct ContentView: View {
             )
         // implicit animation to whole view
         //    .animation(.bouncy, value: dragAmount)
-*/
+
         // We will drag the array of letters around
         // num will count up from zero to the number of
         // characters in our letters array
@@ -333,12 +337,39 @@ struct ContentView: View {
                     enabled.toggle()
                 }
         )
+ */
+
+// Showing and hiding views with transitions
+        VStack {
+            Button("Tap me") {
+                // animate the Boolean change
+                // therefore animate the the rectangle appearing
+                // instead of the Tap Me button just jumping
+                // in and out of the rectangle
+                withAnimation {
+                    isShowingRed.toggle()
+                }
+            }
+            // we will make this red rectangle
+            // only appear when if isShowingRed is true
+            if isShowingRed {
+                Rectangle()
+                    .fill(.red)
+                    .frame(width: 200, height: 200)
+                // scale rectangle up and down in size
+                // allows Tap Me to always stay outside
+                // of rectangle
+                //    .transition(.scale)
+                // transition differently on insertion
+                // versus removal
+                    .transition(.asymmetric(insertion: .scale, removal: .opacity))
+            }
+        }
         
     }
 }
 
-// Test change
-// Test change 2
+
 
 #Preview {
     ContentView()
