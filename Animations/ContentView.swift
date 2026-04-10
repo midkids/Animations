@@ -12,6 +12,34 @@
 
 import SwiftUI
 
+// use for Building custom transitions using ViewModifier
+// Here is our custom modifier
+// We must be able to instantiate the modifier
+// therefore it has to be one we create ourselves
+// With this custom modifier, we can control the
+// anchor point
+struct CornerRotateModifier: ViewModifier {
+    let amount: Double
+    // UnitPoint is a special type for controlling the anchor
+    let anchor: UnitPoint
+    func body(content: Content) -> some View {
+        content
+            .rotationEffect(.degrees(amount), anchor: anchor)
+            .clipped()
+    }
+}
+
+// wrapping our custom modifier in an extension
+// makes it much easier to use
+extension AnyTransition {
+    static var pivot: AnyTransition {
+        .modifier(
+            active: CornerRotateModifier(amount: -90, anchor: .topLeading),
+            identity: CornerRotateModifier(amount: 0, anchor: .topLeading)
+        )
+    }
+}
+
 struct ContentView: View {
     
     // size is 100%
@@ -29,6 +57,7 @@ struct ContentView: View {
     let letters = Array("Hello SwiftUI")
     
     // used for Showing and hiding views with transitions
+    // and Building custom transitions using ViewModifier
     @State private var isShowingRed = false
      
     
@@ -339,6 +368,7 @@ struct ContentView: View {
         )
  */
 
+/*
 // Showing and hiding views with transitions
         VStack {
             Button("Tap me") {
@@ -365,11 +395,30 @@ struct ContentView: View {
                     .transition(.asymmetric(insertion: .scale, removal: .opacity))
             }
         }
+ */
+        
+// Building custom transitions using ViewModifier
+        //
+        ZStack {
+            Rectangle()
+                .fill(.blue)
+                .frame(width: 200, height: 200)
+            
+            if isShowingRed {
+                Rectangle()
+                    .fill(.red)
+                    .frame(width: 200, height: 200)
+                    .transition(.pivot)
+            }
+        }
+        .onTapGesture {
+            withAnimation{
+                isShowingRed.toggle()
+            }
+        }
         
     }
 }
-
-
 
 #Preview {
     ContentView()
